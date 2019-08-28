@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+<div class="col-md-6">
+<div class="jumbotron">
+  <h1 class="display-4">Easy Attendance</h1>
+  <p class="lead">Take easily attendance of your class with good accuracy and absolutely no chance of proxy. Move on from traditional pen paper attendance method.
+ </p>
+  <hr class="my-4">
+  <p>Just enter details of class and click and upload the picture of classroom.</p>
+  <a class="btn btn-success btn-lg" href="{% url 'teachers:attendance'  %}" role="button">Take attendance</a>
+</div>
+</div>
+
+<div class="col-md-6">
+<div class="jumbotron">
+  <h1 class="display-4">Attendance manager</h1>
+  <p class="lead">All the attendance are managed and stored in database. Manager does all the hardwork of teachers like storing records securely and all necessary caclulations on records.</p>
+  <hr class="my-4">
+  <p>Enter the details of class to download the attendance record.</p>
+  <a class="btn btn-warning btn-lg" href="{% url 'teachers:download_csv'  %}" role="button">Download Attendance</a>
+</div>
+</div>
+</div>
+
+{% endblock  %}
