@@ -1,3 +1,0 @@
-
-django-crispy-forms==1.7.0
-
