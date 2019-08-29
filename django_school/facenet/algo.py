@@ -387,6 +387,7 @@ def recognize_faces_in_cam(input_embeddings, image, csv_url):    #Predicting the
     font = cv2.FONT_HERSHEY_SIMPLEX
     face_cascade = cv2.CascadeClassifier(r"facenet\haarcascade_frontalface_default.xml")
     col_names =  ['Id','Date','Time']
+    record = []
     attendance = pd.DataFrame(columns = col_names)
 #     while vc.isOpened():
 #    while True:
@@ -423,6 +424,7 @@ def recognize_faces_in_cam(input_embeddings, image, csv_url):    #Predicting the
         if identity is not None:
             img = cv2.rectangle(frame,(x1, y1),(x2, y2),(255,255,255),2)
             cv2.putText(img, str(identity), (x1+5,y1-5), font, 1, (255,255,255), 2)
+            record.append(identity)
             attendance.loc[len(attendance)] = [identity,date,timeStamp]
             cv2.imwrite("media/preprocess/" +date + timeStamp + ".jpg", img)
     print("image=",img)
@@ -445,6 +447,7 @@ def recognize_faces_in_cam(input_embeddings, image, csv_url):    #Predicting the
 def TrainImage(image, name):
 #     name = input("Enter your Name : ") 
     Id = name
+    print("image=",image)
     img = cv2.imread(image)
 
     face_detector = cv2.CascadeClassifier(r"facenet\haarcascade_frontalface_default.xml")

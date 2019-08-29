@@ -44,10 +44,18 @@ class StudentDetails(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     branch = models.CharField(max_length=50, choices=BRANCH_CHOICES)
     semester = models.IntegerField()
-    image = models.ImageField(upload_to=user_directory_path)
+    image = models.ImageField(upload_to='embeddings/')
 
     def __str__(self):
         return self.user.username
+
+
+class AttendanceRecord(models.Model):
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE)
+    student = models.ForeignKey(StudentDetails, on_delete=models.CASCADE)
+    branch = models.CharField(max_length=50, choices=BRANCH_CHOICES)
+    semester = models.IntegerField()
+    date = models.DateTimeField()
 
 
 @receiver(post_save, sender=Attendance, dispatch_uid="pass_image")
@@ -62,8 +70,16 @@ def pass_image_to_neural_net(sender, instance, **kwargs):
         os.makedirs(csv_url)
     except:
         pass
-    csv_url = csv_url + "/" +  instance.branch + "_" + str(instance.semester) + ".csv"
-    recognize_faces_in_cam(input_embeddings, image_url, csv_url)
+    csv_url = csv_url + "/" + instance.branch + "_" + str(instance.semester) + ".csv"
+    record = set(recognize_faces_in_cam(input_embeddings, image_url, csv_url))
+    teacher = instance.user
+    branch = instance.branch
+    semester = instance.semester
+
+    for i in record:
+        student = StudentDetails.objects.get(user__username=i)
+        r = AttendanceRecord(teacher=teacher, student=student, semester=semester, branch=branch, date=today)
+        r.save()
 
 
 @receiver(post_save, sender=StudentDetails, dispatch_uid="train_image")
@@ -71,4 +87,3 @@ def train_image(sender, instance, **kwargs):
     url = instance.image.url[1::]
     print('url=', url)
     TrainImage(url, instance.user.username)
-

@@ -44,7 +44,9 @@ class AttendanceView(CreateView):
         user.save()
         return redirect("teachers:dashboard")
 
-@method_decorator([login_required, teacher_required], name='dispatch')
+
+@login_required
+@teacher_required
 def download_attendance(request):
     form = DownloadCsv()
     if request.method == "POST":
