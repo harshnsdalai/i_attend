@@ -426,16 +426,17 @@ def recognize_faces_in_cam(input_embeddings, image, csv_url):    #Predicting the
             cv2.putText(img, str(identity), (x1+5,y1-5), font, 1, (255,255,255), 2)
             record.append(identity)
             attendance.loc[len(attendance)] = [identity,date,timeStamp]
-            cv2.imwrite("media/preprocess/" +date + timeStamp + ".jpg", img)
-    print("image=",img)
-    if cv2.imwrite("asdfasdfasdfteraehasnaaa.jpg", img):
-        print("sadgashgasjhfajsfhlasjdfhasjdfhahdfjlashdj")
+
+    if cv2.imwrite(image, img):
+        print("Image of attendance recorded successfully")
     else:
-        print("chutiya katat")    
+        print("Failed to save image of attendance!!")    
     attendance=attendance.drop_duplicates(subset=['Id'],keep='first') 
  
     #fileName="Attendance\Attendance_"+date+"_"+Hour+"-"+Minute+"-"+Second+".csv"
     attendance.to_csv(csv_url,index=False)
+
+    return record
 
 
 # ## Capturing the face image

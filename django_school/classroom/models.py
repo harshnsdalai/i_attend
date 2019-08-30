@@ -13,12 +13,19 @@ class User(AbstractUser):
     is_teacher = models.BooleanField(default=False)
 
 
-def user_directory_path(instance, filename):
+def teacher_directory_path(instance, filename):
     file_type = "." + filename.split('.')[-1]
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return 'attendance_images/{0}/{1}/{2}/{3}/{4}'.format(
         instance.user.username, today.year, today.month, today.day,
         instance.branch + "_" + str(instance.semester) + file_type)
+
+
+def student_directory_path(instance, filename):
+    file_type = "." + filename.split('.')[-1]
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'embeddings/{0}'.format(
+        instance.user.username + file_type)
 
 
 BRANCH_CHOICES = [
@@ -34,7 +41,7 @@ class Attendance(models.Model):
     subject = models.CharField(max_length=50)
     branch = models.CharField(max_length=50, choices=BRANCH_CHOICES)
     semester = models.IntegerField()
-    image = models.ImageField(upload_to=user_directory_path)
+    image = models.ImageField(upload_to=teacher_directory_path)
 
     def __str__(self):
         return self.user.username + self.branch
@@ -44,7 +51,7 @@ class StudentDetails(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     branch = models.CharField(max_length=50, choices=BRANCH_CHOICES)
     semester = models.IntegerField()
-    image = models.ImageField(upload_to='embeddings/')
+    image = models.ImageField(upload_to=student_directory_path)
 
     def __str__(self):
         return self.user.username
@@ -56,6 +63,10 @@ class AttendanceRecord(models.Model):
     branch = models.CharField(max_length=50, choices=BRANCH_CHOICES)
     semester = models.IntegerField()
     date = models.DateTimeField()
+
+    def __str__(self):
+        return self.student.user.username
+
 
 
 @receiver(post_save, sender=Attendance, dispatch_uid="pass_image")

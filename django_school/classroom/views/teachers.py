@@ -11,10 +11,10 @@ from django.views.generic import CreateView
 from django.http import HttpResponse
 from ..decorators import teacher_required
 from ..forms import TeacherSignUpForm, AttendanceForm, DownloadCsv
-from ..models import User, Attendance
+from ..models import User, Attendance, AttendanceRecord
 from django.utils.encoding import smart_str
 import os
-
+import csv
 
 
 class TeacherSignUpView(CreateView):
@@ -30,6 +30,7 @@ class TeacherSignUpView(CreateView):
         user = form.save()
         login(self.request, user)
         return redirect("teachers:dashboard")
+
 
 @method_decorator([login_required, teacher_required], name='dispatch')
 class AttendanceView(CreateView):
@@ -53,17 +54,31 @@ def download_attendance(request):
         form = DownloadCsv(request.POST)
         if form.is_valid():
             user = request.user.username
-            date = form.cleaned_data.get('date')
+            day = form.cleaned_data.get('date')
             year = form.cleaned_data.get('year')
             month = form.cleaned_data.get('month')
+            date = year + "-" + month + "-" + day
             semester = form.cleaned_data.get('semester')
             branch = form.cleaned_data.get('branch')
-            path_to_file = 'media/attendance/' + user + "/" + str(year) + "/" + str(month) + "/" + str(date) + "/" + branch + "_" + str(semester)+ ".csv"
-            if os.path.exists(path_to_file):
-                with open(path_to_file, 'rb') as fh:
+            obj = AttendanceRecord.objects.filter(teacher=user, date=date, branch=branch, semester=semester)
+            
+            path_to_file = str(year) + "/" + str(month) + "/" + str(date) + "/" + branch + "_" + str(semester)+ ".csv"
+            #path_to_file = 'media/attendance/' + user + "/" + str(year) + "/" + str(month) + "/" + str(date) + "/" + branch + "_" + str(semester)+ ".csv"
+
+            response = HttpResponse(content_type='text/csv')
+
+            response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(path_to_file)
+
+            writer = csv.writer(response)
+            for i in obj:
+                writer.writerow([i.student.user.username])
+            return response
+            
+            # if os.path.exists(path_to_file):
+            #     with open(path_to_file, 'rb') as fh:
                     
-                    response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
-                    response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(path_to_file)
-                    response['X-Sendfile'] = path_to_file
-                    return response
+            #         response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+            #         response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(path_to_file)
+            #         response['X-Sendfile'] = path_to_file
+            #         return response
     return render(request, 'classroom/teachers/download_csv.html', {'form': form})
