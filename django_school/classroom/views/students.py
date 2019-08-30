@@ -9,8 +9,10 @@ from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, ListView, UpdateView
 from django.http import HttpResponse
 from ..decorators import student_required
-from ..forms import StudentSignUpForm, StudentDetailsForm
-from ..models import User, StudentDetails
+from ..forms import (StudentSignUpForm, StudentDetailsForm,
+                     StudentAttendanceDetails)
+from ..models import User, StudentDetails,  AttendanceRecord, Attendance
+from collections import Counter
 
 
 class StudentSignUpView(CreateView):
@@ -27,6 +29,7 @@ class StudentSignUpView(CreateView):
         login(self.request, user)
         return redirect('students:submit_details')
 
+
 @method_decorator([login_required, student_required], name='dispatch')
 class StudentDetailsView(CreateView):
     model = StudentDetails
@@ -38,4 +41,37 @@ class StudentDetailsView(CreateView):
         user = form.save(commit=False)
         user.user = self.request.user
         user.save()
-        return HttpResponse("Congratulations ! You are now registered in the college.")
+        return HttpResponse(
+            "Congratulations ! You are now registered in the college.")
+
+
+def student_attendance_detail(request):
+    form = StudentAttendanceDetails()
+    if request.method == "POST":
+        form = StudentAttendanceDetails(request.POST)
+        if form.is_valid():
+            user = request.user.username
+            student = form.cleaned_data.get('student')
+
+            semester = form.cleaned_data.get('semester')
+            branch = form.cleaned_data.get('branch')
+
+            obj = AttendanceRecord.objects.filter(
+                            student__user__username=student, branch=branch,
+                            semester=semester)
+            obj_subject = []
+
+            for i in obj:
+                obj_subject.append(i.subject)
+            context = Counter(obj_subject)
+            total_classes_context = {}
+            for subject in context.keys():
+                total = Attendance.objects.filter(subject=subject).count()
+                total_classes_context[subject] = [context[subject], total,
+                                                  context[subject]/total]
+
+            return render(request, 'classroom/students/student_info.html',
+                          {'total_classes': total_classes_context})
+
+    return render(request, 'classroom/students/student_info.html',
+                  {'form': form})

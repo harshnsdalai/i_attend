@@ -60,9 +60,11 @@ def download_attendance(request):
             date = str(year) + "-" + str(month) + "-" + str(day)
             semester = form.cleaned_data.get('semester')
             branch = form.cleaned_data.get('branch')
-            obj = AttendanceRecord.objects.filter(teacher__username=user, date=date, branch=branch, semester=semester)
+            obj = AttendanceRecord.objects.filter(
+                teacher__username=user, date=date, branch=branch,
+                semester=semester)
 
-            path_to_file = str(day) + "/" + branch + "_" + str(semester)+ ".csv"
+            path_to_file = str(day) + "/" + branch + "_" + str(semester) + ".csv"
 
             response = HttpResponse(content_type='text/csv')
 
@@ -73,4 +75,5 @@ def download_attendance(request):
             for i in obj:
                 writer.writerow([i])
             return response
-    return render(request, 'classroom/teachers/download_csv.html', {'form': form})
+    return render(request, 'classroom/teachers/download_csv.html',
+                  {'form': form})

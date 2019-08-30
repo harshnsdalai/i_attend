@@ -63,6 +63,7 @@ class AttendanceRecord(models.Model):
     branch = models.CharField(max_length=50, choices=BRANCH_CHOICES)
     semester = models.IntegerField()
     date = models.DateField()
+    subject = models.CharField(max_length=50)
 
     def __str__(self):
         return self.student.user.username
@@ -87,10 +88,11 @@ def pass_image_to_neural_net(sender, instance, **kwargs):
     teacher = instance.user
     branch = instance.branch
     semester = instance.semester
+    subject = instance.subject
     print("Pass image to neural net:The detected identity in pic uploaded by teacher are = ", record)
     for i in record:
         student = StudentDetails.objects.get(user__username=i)
-        r = AttendanceRecord(teacher=teacher, student=student, semester=semester, branch=branch, date=today)
+        r = AttendanceRecord(teacher=teacher, subject=subject, student=student, semester=semester, branch=branch, date=today)
         r.save()
 
 

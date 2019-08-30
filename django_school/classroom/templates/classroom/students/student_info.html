@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+{% if form %}
+    <div class="row">
+    <div class="col-md-8 col-sm-10 col-12">
+      <h2>Fill the fields to get student details</h2>
+      <form method="post" novalidate enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success">Submit</button>
+      </form>
+    </div>
+  </div>
+{% else %}
+      <div class="row">
+    <div class="col-md-8 col-sm-10 col-12">
+      {% for key,values in total_classes.items  %}
+            <p> {{key}} : {% for i in values  %}
+                    {{i}}
+            {% endfor %} </p>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+  
+
+{% endblock %}
