@@ -57,28 +57,20 @@ def download_attendance(request):
             day = form.cleaned_data.get('date')
             year = form.cleaned_data.get('year')
             month = form.cleaned_data.get('month')
-            date = year + "-" + month + "-" + day
+            date = str(year) + "-" + str(month) + "-" + str(day)
             semester = form.cleaned_data.get('semester')
             branch = form.cleaned_data.get('branch')
-            obj = AttendanceRecord.objects.filter(teacher=user, date=date, branch=branch, semester=semester)
-            
-            path_to_file = str(year) + "/" + str(month) + "/" + str(date) + "/" + branch + "_" + str(semester)+ ".csv"
-            #path_to_file = 'media/attendance/' + user + "/" + str(year) + "/" + str(month) + "/" + str(date) + "/" + branch + "_" + str(semester)+ ".csv"
+            obj = AttendanceRecord.objects.filter(teacher__username=user, date=date, branch=branch, semester=semester)
+
+            path_to_file = str(day) + "/" + branch + "_" + str(semester)+ ".csv"
 
             response = HttpResponse(content_type='text/csv')
 
             response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(path_to_file)
 
             writer = csv.writer(response)
+            writer.writerow(["List of Students present"])
             for i in obj:
-                writer.writerow([i.student.user.username])
+                writer.writerow([i])
             return response
-            
-            # if os.path.exists(path_to_file):
-            #     with open(path_to_file, 'rb') as fh:
-                    
-            #         response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
-            #         response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(path_to_file)
-            #         response['X-Sendfile'] = path_to_file
-            #         return response
     return render(request, 'classroom/teachers/download_csv.html', {'form': form})
