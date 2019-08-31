@@ -16,14 +16,42 @@
     </div>
   </div>
 {% else %}
-      <div class="row">
-    <div class="col-md-8 col-sm-10 col-12">
-      {% for key,values in total_classes.items  %}
-            <p> {{key}} : {% for i in values  %}
-                    {{i}}
-            {% endfor %} </p>
-      {% endfor %}
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-sm-10 col-12 align-self-center">
+            <h1 class="display-2">@{{info.student.user.username}}
+                <img src="{{ info.student.image.url }}" class="img-fluid img-thumbnail" style="width: 150px; float: right; margin-right: 10px;" />
+            </h1>
+            <br><br>
+            <p class="lead"><strong>Branch :  </strong>{{info.student.branch}}</p>
+            <p class="lead"><strong>Semester :  </strong>{{info.student.semester}}</p>
+        
+        </div>
     </div>
+    <div class="row justify-content-center">
+        <h3>Attendance Record</h3>
+        <div class="col-md-10 col-sm-10 col-12">
+      
+        {% for key,values in total_classes.items  %}
+            <p class="lead"><strong>Subject :</strong> {{key}}</p>
+
+            <p class="lead"><strong>Status :</strong>
+             Attended <strong>{{values.0}}</strong> out of <strong>{{values.1}}</strong> classes</p>
+                                
+            
+            <div class="progress" style="height: 30px;">
+                <div class="progress-bar" role="progressbar" style="width: {{values.2}}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{values.2}} %</div>
+            </div>
+            <br>
+            {% if values.2 < 50 %}
+                <div class="alert alert-danger">
+                    Attendance is below minimum requirement of 50% in <strong>{{key}}</strong>. Strict actions will be taken.
+                </div>
+            {% else %}
+            {% endif %}
+            
+            <hr>
+        {% endfor %}
+        </div>
   </div>
 {% endif %}
   

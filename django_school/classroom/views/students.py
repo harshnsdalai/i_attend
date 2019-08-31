@@ -13,6 +13,7 @@ from ..forms import (StudentSignUpForm, StudentDetailsForm,
                      StudentAttendanceDetails)
 from ..models import User, StudentDetails,  AttendanceRecord, Attendance
 from collections import Counter
+from math import floor
 
 
 class StudentSignUpView(CreateView):
@@ -52,26 +53,31 @@ def student_attendance_detail(request):
         if form.is_valid():
             user = request.user.username
             student = form.cleaned_data.get('student')
-
             semester = form.cleaned_data.get('semester')
             branch = form.cleaned_data.get('branch')
 
             obj = AttendanceRecord.objects.filter(
                             student__user__username=student, branch=branch,
                             semester=semester)
-            obj_subject = []
 
+            obj_subject = []
+            teacher_list = {}
             for i in obj:
                 obj_subject.append(i.subject)
+                teacher_list[i.subject] = i.teacher.username
             context = Counter(obj_subject)
             total_classes_context = {}
+            print(teacher_list)
             for subject in context.keys():
                 total = Attendance.objects.filter(subject=subject).count()
+                attendance_percentage = floor((context[subject]/total)*100)
                 total_classes_context[subject] = [context[subject], total,
-                                                  context[subject]/total]
-
+                                                  attendance_percentage,
+                                                  teacher_list[subject]]
+            print(obj[0].student.image.url)
             return render(request, 'classroom/students/student_info.html',
-                          {'total_classes': total_classes_context})
+                          {'total_classes': total_classes_context,
+                           'info': obj[0]})
 
     return render(request, 'classroom/students/student_info.html',
                   {'form': form})
