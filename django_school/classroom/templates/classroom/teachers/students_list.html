@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-8 col-sm-10 col-12">
+    {% if error != None %}
+        <div class="alert alert-danger">
+            {{error}}
+        </div>
+    {% else %}
+        {% for student in students  %}
+            <a href="{% url 'students:submit_details2' name=student.user.username %}">@{{student.user.username}}</a><br>
+        {% endfor %}
+    {% endif %}
+      
+    </div>
+    <div class="col-md-4 col-sm-10 col-12">
+
+        <h2>Filter</h2>
+            <form method="get" novalidate>
+
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-secondary">Filter list</button>
+            </form>
+
+      
+    </div>
+  </div>
+{% endblock %}

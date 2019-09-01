@@ -81,3 +81,35 @@ def student_attendance_detail(request):
 
     return render(request, 'classroom/students/student_info.html',
                   {'form': form})
+
+
+def student_attendance_detail2(request, name):
+    student = name
+
+    obj = AttendanceRecord.objects.filter(
+                    student__user__username=student)
+
+    obj_subject = []
+    teacher_list = {}
+
+    for i in obj:
+        obj_subject.append(i.subject)
+        teacher_list[i.subject] = i.teacher.username
+
+    context = Counter(obj_subject)
+    total_classes_context = {}
+    print(teacher_list)
+
+    for subject in context.keys():
+        total = Attendance.objects.filter(subject=subject).count()
+        attendance_percentage = floor((context[subject]/total)*100)
+        total_classes_context[subject] = [context[subject], total,
+                                          attendance_percentage,
+                                          teacher_list[subject]]
+    try:
+        return render(request, 'classroom/students/student_info.html',
+                      {'total_classes': total_classes_context,
+                       'info': obj[0]})
+    except:
+        return render(request, 'classroom/students/student_info.html',
+                      {'error': "No such student ID exists."})

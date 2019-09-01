@@ -62,5 +62,11 @@ class DownloadCsv(forms.Form):
 
 class StudentAttendanceDetails(forms.Form):
     student = forms.CharField()
-    semester = forms.IntegerField()
+    semester = forms.IntegerField(min_value=1, max_value=12)
     branch = forms.ChoiceField(choices=BRANCH_CHOICES)
+
+
+class FilterForm(forms.Form):
+
+    branch = forms.ChoiceField(choices=BRANCH_CHOICES, required=False)
+    semester = forms.IntegerField(min_value=1, max_value=12, required=False)

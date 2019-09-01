@@ -10,8 +10,8 @@ from django.utils.decorators import method_decorator
 from django.views.generic import CreateView
 from django.http import HttpResponse
 from ..decorators import teacher_required
-from ..forms import TeacherSignUpForm, AttendanceForm, DownloadCsv
-from ..models import User, Attendance, AttendanceRecord
+from ..forms import TeacherSignUpForm, AttendanceForm, DownloadCsv, FilterForm
+from ..models import User, Attendance, AttendanceRecord, StudentDetails
 from django.utils.encoding import smart_str
 import os
 import csv
@@ -77,3 +77,33 @@ def download_attendance(request):
             return response
     return render(request, 'classroom/teachers/download_csv.html',
                   {'form': form})
+
+
+def students_list(request):
+    students = StudentDetails.objects.all()
+    form = FilterForm()
+    error = None
+    if request.method == "GET":
+        form = FilterForm(request.GET)
+        if ('branch' and 'semester' in request.GET):
+            students = StudentDetails.objects.filter(
+                branch=request.GET['branch'], semester=request.GET['semester'])
+
+        elif 'branch' in request.GET:
+            students = StudentDetails.objects.filter(
+                branch=request.GET['branch'])
+
+        elif 'semester' in request.GET:
+            students = StudentDetails.objects.filter(
+                semester=request.GET['semester'])
+
+        elif len(request.GET) != 0:
+            return render(request, "404.html")
+
+        if len(students) == 0:
+            error = "Sorry no students in the respective Branch or Semester"
+        else:
+            error = None
+
+    return render(request, 'classroom/teachers/students_list.html',
+                  {'students': students, 'error': error, 'form': form})
