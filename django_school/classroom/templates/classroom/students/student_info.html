@@ -3,6 +3,7 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+{{success}}
 {% if error %}
     <div class="row justify-content-center">
         <div class="col-md-8 col-sm-10 col-12">
@@ -14,12 +15,12 @@
 {% else %}
     <div class="row justify-content-center">
         <div class="col-md-10 col-sm-10 col-12 align-self-center">
-            <h1 class="display-2">@{{info.student.user.username}}
-                <img src="{{ info.student.image.url }}" class="img-fluid img-thumbnail" style="width: 150px; float: right; margin-right: 10px;" />
+            <h1 class="display-2">@{{info.user.username}}
+                <img src="{{ info.image.url }}" class="img-fluid img-thumbnail" style="width: 150px; float: right; margin-right: 10px;" />
             </h1>
             <br><br>
-            <p class="lead"><strong>Branch :  </strong>{{info.student.branch}}</p>
-            <p class="lead"><strong>Semester :  </strong>{{info.student.semester}}</p>
+            <p class="lead"><strong>Branch :  </strong>{{info.branch}}</p>
+            <p class="lead"><strong>Semester :  </strong>{{info.semester}}</p>
         
         </div>
     </div>
@@ -46,6 +47,11 @@
             {% endif %}
             
             <hr>
+        {% empty %}
+            <div class="alert alert-info">
+                No classes attended yet!               
+            </div>
+            
         {% endfor %}
         </div>
   </div>

@@ -1,6 +1,13 @@
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 
+from django.template.defaulttags import register
+
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
+
 
 class SignUpView(TemplateView):
     template_name = 'registration/signup.html'

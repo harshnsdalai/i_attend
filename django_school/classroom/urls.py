@@ -11,10 +11,8 @@ urlpatterns = [
     path('students/', include(([
         path('submit_details', students.StudentDetailsView.as_view(),
              name='submit_details'),
-        path('student_info', students.student_attendance_detail,
-             name='submit_details'),
-        path('<str:name>', students.student_attendance_detail2,
-             name='submit_details2')
+        path('profile/<str:name>', students.student_attendance_detail,
+             name='student_details')
      ], 'classroom'), namespace='students')),
 
     path('teachers/', include(([
@@ -22,7 +20,7 @@ urlpatterns = [
              TemplateView.as_view(
               template_name='classroom/teachers/dashboard.html'),
              name='dashboard'),
-        path('attendance', teachers.AttendanceView.as_view(),
+        path('take_attendance', teachers.AttendanceView.as_view(),
              name='attendance'),
         path('download_attendance', teachers.download_attendance,
              name='download_csv'),

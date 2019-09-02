@@ -2,7 +2,7 @@ import os
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 import datetime
-# from facenet.algo import input_embeddings, recognize_faces_in_cam, TrainImage
+#from facenet.algo import input_embeddings, recognize_faces_in_cam, TrainImage
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 today = datetime.datetime.today()
@@ -30,7 +30,7 @@ def student_directory_path(instance, filename):
 
 BRANCH_CHOICES = [
         ('Information_Technology', 'Information_Technology'),
-        ('Computer_Science_an_ Engineering', 'Computer_Science_and_Engineering'),
+        ('Computer_Science_and_ Engineering', 'Computer_Science_and_Engineering'),
         ('Electronics_and_Electrical_Engineering', 'Electronics_and_Electrical_Engineering'),
         ('Mining', 'Mining'),
     ]
@@ -67,7 +67,6 @@ class AttendanceRecord(models.Model):
 
     def __str__(self):
         return self.student.user.username
-
 
 
 @receiver(post_save, sender=Attendance, dispatch_uid="pass_image")

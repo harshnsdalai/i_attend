@@ -15,6 +15,7 @@ from ..models import User, Attendance, AttendanceRecord, StudentDetails
 from django.utils.encoding import smart_str
 import os
 import csv
+from classroom.views.students import student_statistics
 
 
 class TeacherSignUpView(CreateView):
@@ -80,30 +81,45 @@ def download_attendance(request):
 
 
 def students_list(request):
-    students = StudentDetails.objects.all()
-    form = FilterForm()
-    error = None
-    if request.method == "GET":
-        form = FilterForm(request.GET)
-        if ('branch' and 'semester' in request.GET):
+
+    form = FilterForm(request.GET)
+
+    if 'branch' and 'semester' in request.GET:
+        if request.GET['branch'] != '' and request.GET['semester'] != '':
             students = StudentDetails.objects.filter(
                 branch=request.GET['branch'], semester=request.GET['semester'])
-
-        elif 'branch' in request.GET:
+        elif request.GET['branch'] != '':
             students = StudentDetails.objects.filter(
                 branch=request.GET['branch'])
-
-        elif 'semester' in request.GET:
+        elif request.GET['semester']:
             students = StudentDetails.objects.filter(
-                semester=request.GET['semester'])
-
-        elif len(request.GET) != 0:
-            return render(request, "404.html")
-
-        if len(students) == 0:
-            error = "Sorry no students in the respective Branch or Semester"
+                        semester=request.GET['semester'])
         else:
-            error = None
+            students = StudentDetails.objects.all()
+
+    elif len(request.GET) != 0:
+        return render(request, "404.html")
+
+    else:
+        students = StudentDetails.objects.all()
+    status_dict = {}
+    for student in students:
+        status_dict[student.user.username] = is_regular(student.user.username)
+    print(status_dict)
 
     return render(request, 'classroom/teachers/students_list.html',
-                  {'students': students, 'error': error, 'form': form})
+                  {'students': students, 'form': form,
+                   'status': status_dict})
+
+
+def is_regular(student):
+    obj = AttendanceRecord.objects.filter(
+                    student__user__username=student)
+    total_classes = student_statistics(obj)
+    min = 50
+    status = 'Regular'
+    for values in total_classes.values():
+        if values[2] < min:
+            status = 'Not Regular'
+            break
+    return status

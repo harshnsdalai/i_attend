@@ -5,27 +5,45 @@
 {% block content %}
   <div class="row">
     <div class="col-md-8 col-sm-10 col-12">
-    {% if error != None %}
-        <div class="alert alert-danger">
-            {{error}}
-        </div>
-    {% else %}
-        {% for student in students  %}
-            <a href="{% url 'students:submit_details2' name=student.user.username %}">@{{student.user.username}}</a><br>
-        {% endfor %}
-    {% endif %}
-      
+        <table class="table table-hover table-borderless">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">student's handle</th>
+                    <th scope="col">branch</th>
+                    <th scope="col">sem</th>
+                    <th scope="col">status</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for student in students  %}
+                {% if status|get_item:student.user.username == "Not Regular"  %}
+                    <tr class="table-danger">
+                {% else %}
+                    <tr class="table-success">
+                {% endif %}
+                        <th scope="row">{{ forloop.counter}}</th>
+                        <td><a href="{% url 'students:student_details' name=student.user.username %}">
+                            @{{student.user.username}}</a>
+                        </td>
+                        <td>{{ student.branch }}</td>
+                        <td>{{ student.semester }}</td>
+                        <td>{{ status|get_item:student.user.username }}</td>
+                    </tr>
+            {% empty %}
+                <div class="alert alert-danger">
+                    Sorry no students in the respective Branch or Semester
+                </div>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
     <div class="col-md-4 col-sm-10 col-12">
-
         <h2>Filter</h2>
             <form method="get" novalidate>
-
                 {{ form|crispy }}
                 <button type="submit" class="btn btn-secondary">Filter list</button>
             </form>
-
-      
     </div>
   </div>
 {% endblock %}

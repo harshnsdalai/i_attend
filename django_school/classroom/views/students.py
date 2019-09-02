@@ -9,8 +9,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, ListView, UpdateView
 from django.http import HttpResponse
 from ..decorators import student_required
-from ..forms import (StudentSignUpForm, StudentDetailsForm,
-                     StudentAttendanceDetails)
+from ..forms import (StudentSignUpForm, StudentDetailsForm)
 from ..models import User, StudentDetails,  AttendanceRecord, Attendance
 from collections import Counter
 from math import floor
@@ -37,58 +36,19 @@ class StudentDetailsView(CreateView):
     form_class = StudentDetailsForm
     template_name = "classroom/students/student_details.html"
 
-    def form_valid(self, form):
+    def get_context_data(self, **kwargs):
+        kwargs['success'] = "Congratulations ! You are now registered in the college."
+        return super().get_context_data(**kwargs)
 
+    def form_valid(self, form):
         user = form.save(commit=False)
         user.user = self.request.user
         user.save()
-        return HttpResponse(
-            "Congratulations ! You are now registered in the college.")
+        return redirect('students:student_details',
+                        name=self.request.user.username)
 
 
-def student_attendance_detail(request):
-    form = StudentAttendanceDetails()
-    if request.method == "POST":
-        form = StudentAttendanceDetails(request.POST)
-        if form.is_valid():
-            user = request.user.username
-            student = form.cleaned_data.get('student')
-            semester = form.cleaned_data.get('semester')
-            branch = form.cleaned_data.get('branch')
-
-            obj = AttendanceRecord.objects.filter(
-                            student__user__username=student, branch=branch,
-                            semester=semester)
-
-            obj_subject = []
-            teacher_list = {}
-            for i in obj:
-                obj_subject.append(i.subject)
-                teacher_list[i.subject] = i.teacher.username
-            context = Counter(obj_subject)
-            total_classes_context = {}
-            print(teacher_list)
-            for subject in context.keys():
-                total = Attendance.objects.filter(subject=subject).count()
-                attendance_percentage = floor((context[subject]/total)*100)
-                total_classes_context[subject] = [context[subject], total,
-                                                  attendance_percentage,
-                                                  teacher_list[subject]]
-            print(obj[0].student.image.url)
-            return render(request, 'classroom/students/student_info.html',
-                          {'total_classes': total_classes_context,
-                           'info': obj[0]})
-
-    return render(request, 'classroom/students/student_info.html',
-                  {'form': form})
-
-
-def student_attendance_detail2(request, name):
-    student = name
-
-    obj = AttendanceRecord.objects.filter(
-                    student__user__username=student)
-
+def student_statistics(obj):
     obj_subject = []
     teacher_list = {}
 
@@ -106,10 +66,21 @@ def student_attendance_detail2(request, name):
         total_classes_context[subject] = [context[subject], total,
                                           attendance_percentage,
                                           teacher_list[subject]]
+    return total_classes_context
+
+
+def student_attendance_detail(request, name):
+    student = name
+    print(name)
+    obj = AttendanceRecord.objects.filter(
+                    student__user__username=student)
+    student_info = StudentDetails.objects.get(user__username=student)
+    total_classes_context = student_statistics(obj)
+
     try:
         return render(request, 'classroom/students/student_info.html',
                       {'total_classes': total_classes_context,
-                       'info': obj[0]})
+                       'info': student_info})
     except:
         return render(request, 'classroom/students/student_info.html',
                       {'error': "No such student ID exists."})

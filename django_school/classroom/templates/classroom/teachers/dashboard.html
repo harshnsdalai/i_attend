@@ -16,13 +16,31 @@
 
 <div class="col-md-6">
 <div class="jumbotron">
-  <h1 class="display-4">Attendance manager</h1>
-  <p class="lead">All the attendance are managed and stored in database. Manager does all the hardwork of teachers like storing records securely and all necessary caclulations on records.</p>
+  <h1 class="display-4">Attendance Record</h1>
+  <p class="lead">All the attendance are managed and stored in database. Download the Attedance in a clear csv format and also check the class image of that day.</p>
   <hr class="my-4">
   <p>Enter the details of class to download the attendance record.</p>
   <a class="btn btn-warning btn-lg" href="{% url 'teachers:download_csv'  %}" role="button">Download Attendance</a>
 </div>
 </div>
 </div>
+
+<div class="row">
+
+    <div class="col-md-6">
+    <div class="jumbotron">
+    <h1 class="display-4">Check students performance</h1>
+    <p class="lead">Manager does all the hardwork of teachers like all necessary caclulations
+     on records. See easily attendance of your 
+     students and their overall profile with absolutely no chance of miscalculations
+    </p>
+    <hr class="my-4">
+
+    <a class="btn btn-info btn-lg" href="{% url 'teachers:students_list'  %}" role="button">Go to Students List</a>
+    </div>
+    </div>
+
+</div>
+
 
 {% endblock  %}

@@ -38,7 +38,7 @@
                     {% endif %}
                   {% endif %}
               {% if user.is_authenticated %}
-                <p class="pt-3">Logged in as <strong>{{ user.username }}</strong>. <a href="{% url 'logout' %}">Log out</a>.</p>
+                <p class="pt-3">Logged in as <strong>{{ user.username }}</strong>. <a href="{% url 'home' %}" >Dashboard. </a> <a href="{% url 'logout' %}">Log out</a>.</p>
               {% else %}
                 <a href="{% url 'login' %}" class="btn btn-light" role="button">Log in</a>
                 <a href="{% url 'signup' %}" class="btn btn-dark" role="button">Sign up</a>
