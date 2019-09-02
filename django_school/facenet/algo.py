@@ -356,7 +356,7 @@ def recognize_face(face_image, input_embeddings, model):
         if euclidean_distance < minimum_distance:
             minimum_distance = euclidean_distance
             name = input_name
-    if minimum_distance < 0.50:
+    if minimum_distance < 0.9:
         return str(name)
     else:
         return None
@@ -399,6 +399,7 @@ def recognize_faces_in_cam(input_embeddings, image):    # Predicting the output
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+
 
     # Loop through all the faces detected
     # for (x, y, w, h) in faces:
@@ -445,6 +446,7 @@ def TrainImage(image, name):
 
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     faces = face_detector.detectMultiScale(gray, 1.3, 5)
+    img = gray
     for (x, y, w, h) in faces:
         x1 = x
         y1 = y
