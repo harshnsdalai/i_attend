@@ -416,11 +416,11 @@ def recognize_faces_in_cam(input_embeddings, image):    # Predicting the output
         identity = recognize_face(face_image, input_embeddings, model)
 
         if identity is not None:
-            img = cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 255, 255), 2)
-            cv2.putText(img, str(identity), (x1+5, y1-5), font, 1, (255, 255, 255), 2)
+            img = cv2.rectangle(gray, (x1, y1), (x2, y2), (255, 255, 255), 2)
+            cv2.putText(gray, str(identity), (x1+5, y1-5), font, 1, (255, 255, 255), 2)
             record.append(identity)
 
-    if cv2.imwrite(image, img):
+    if cv2.imwrite(image, gray):
         print("Image of attendance recorded successfully")
     else:
         print("Failed to save image of attendance!!")
