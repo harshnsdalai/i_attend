@@ -30,8 +30,9 @@ def student_directory_path(instance, filename):
 
 BRANCH_CHOICES = [
         ('Information_Technology', 'Information_Technology'),
-        ('Computer_Science_and_ Engineering', 'Computer_Science_and_Engineering'),
-        ('Electronics_and_Electrical_Engineering', 'Electronics_and_Electrical_Engineering'),
+        ('CSE', 'CSE'),
+        ('Electronics_and_Electrical_Engineering',
+         'Electronics_and_Electrical_Engineering'),
         ('Mining', 'Mining'),
     ]
 
@@ -97,8 +98,6 @@ def pass_image_to_neural_net(sender, instance, **kwargs):
         r = AttendanceRecord(teacher=teacher, subject=subject, student=student, semester=semester, branch=branch, date=today)
         r.save()
     
-    
-
 
 @receiver(post_save, sender=StudentDetails, dispatch_uid="train_image")
 def train_image(sender, instance, **kwargs):

@@ -44,7 +44,7 @@ class AttendanceView(CreateView):
         user = form.save(commit=False)
         user.user = self.request.user
         user.save()
-        return redirect("teachers:dashboard")
+        return redirect("teachers:taken_attendance_info", pk=user.id)
 
 
 @login_required
@@ -123,3 +123,15 @@ def is_regular(student):
             status = 'Not Regular'
             break
     return status
+
+
+def taken_attendance_info(request, pk):
+    attendance_obj = get_object_or_404(Attendance, pk=pk)
+    return render(request, 'classroom/teachers/taken_attendance_info.html',
+                  {'attendance_info': attendance_obj})
+
+
+def all_attendance_info(request):
+    attendance_obj = Attendance.objects.filter(user=request.user).order_by('-date')
+    return render(request, 'classroom/teachers/all_attendance_info.html',
+                  {'attendance_info': attendance_obj})

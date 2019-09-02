@@ -22,6 +22,10 @@ urlpatterns = [
              name='dashboard'),
         path('take_attendance', teachers.AttendanceView.as_view(),
              name='attendance'),
+        path('taken_attendance_info/<int:pk>', teachers.taken_attendance_info,
+             name='taken_attendance_info'),
+        path('all_attendance_info', teachers.all_attendance_info,
+             name='all_attendance_info'),
         path('download_attendance', teachers.download_attendance,
              name='download_csv'),
         path('students_list', teachers.students_list, name='students_list')

@@ -45,8 +45,8 @@ class StudentDetailsForm(forms.ModelForm):
 
 BRANCH_CHOICES = [('', '---------')] + [
         ('Information_Technology', 'Information_Technology'),
-        ('Computer_Science_and_Engineering', 'Computer_Science_and_Engineering'),
-        ('Electronics_and_Electrical Engineering',
+        ('CSE', 'CSE'),
+        ('Electronics_and_Electrical_Engineering',
          'Electronics_and_Electrical_Engineering'),
         ('Mining', 'Mining'),
     ]
