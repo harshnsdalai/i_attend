@@ -2,9 +2,10 @@ import os
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 import datetime
-#from facenet.algo import input_embeddings, recognize_faces_in_cam, TrainImage
+from facenet.algo import input_embeddings, recognize_faces_in_cam, TrainImage
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.shortcuts import get_object_or_404
 today = datetime.datetime.today()
 
 
@@ -76,8 +77,8 @@ class AttendanceRecord(models.Model):
 @receiver(post_save, sender=Attendance, dispatch_uid="pass_image")
 def pass_image_to_neural_net(sender, instance, **kwargs):
     image_url = instance.image.url[1::]
-    attendance_data = {'record': ['harsh', 'manav', 'tandon'], 'count': 50 }
-    #attendance_data = recognize_faces_in_cam(input_embeddings, image_url)
+    #attendance_data = {'record': ['harsh', 'manav', 'tandon'], 'count': 50 }
+    attendance_data = recognize_faces_in_cam(input_embeddings, image_url)
     record = attendance_data['record']
     teacher = instance.user
     branch = instance.branch
@@ -87,20 +88,21 @@ def pass_image_to_neural_net(sender, instance, **kwargs):
     if not instance.count_added:
 
         q = Attendance.objects.get(id=instance.id)
-        q.count = 50
+        q.count = attendance_data['count']
         q.count_added = True
         q.save()
         return
     print("Pass image to neural net:The detected identity in pic uploaded by teacher are = ", record)
     for i in record:
+        id = i.split('_')[-1]
         print(i)
-        student = StudentDetails.objects.get(user__username=i)
+        student = get_object_or_404(StudentDetails, pk=int(id))# StudentDetails.objects.get(user__username=i)
         r = AttendanceRecord(teacher=teacher, subject=subject, student=student, semester=semester, branch=branch, date=today)
         r.save()
-    
+
 
 @receiver(post_save, sender=StudentDetails, dispatch_uid="train_image")
 def train_image(sender, instance, **kwargs):
     url = instance.image.url[1::]
     print('url=', url)
-    TrainImage(url, instance.user.username)
+    TrainImage(url, instance.user.username + "_" + str(instance.id))
