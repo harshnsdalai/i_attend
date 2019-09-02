@@ -2,7 +2,7 @@ import os
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 import datetime
-from facenet.algo import input_embeddings, recognize_faces_in_cam, TrainImage
+# from facenet.algo import input_embeddings, recognize_faces_in_cam, TrainImage
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
