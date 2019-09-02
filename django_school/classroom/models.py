@@ -2,7 +2,7 @@ import os
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 import datetime
-from facenet.algo import input_embeddings, recognize_faces_in_cam, TrainImage
+#from facenet.algo import input_embeddings, recognize_faces_in_cam, TrainImage
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 today = datetime.datetime.today()
@@ -75,16 +75,19 @@ class AttendanceRecord(models.Model):
 @receiver(post_save, sender=Attendance, dispatch_uid="pass_image")
 def pass_image_to_neural_net(sender, instance, **kwargs):
     image_url = instance.image.url[1::]
-    attendance_data = recognize_faces_in_cam(input_embeddings, image_url)
+    attendance_data = {'record': ['harsh', 'manav', 'tandon'], 'count': 50 }
+    #attendance_data = recognize_faces_in_cam(input_embeddings, image_url)
     record = attendance_data['record']
     teacher = instance.user
     branch = instance.branch
     semester = instance.semester
     subject = instance.subject
+
     if not instance.count_added:
+
         q = Attendance.objects.get(id=instance.id)
         q.count = 50
-        q.date_added = True
+        q.count_added = True
         q.save()
         return
     print("Pass image to neural net:The detected identity in pic uploaded by teacher are = ", record)
@@ -93,6 +96,8 @@ def pass_image_to_neural_net(sender, instance, **kwargs):
         student = StudentDetails.objects.get(user__username=i)
         r = AttendanceRecord(teacher=teacher, subject=subject, student=student, semester=semester, branch=branch, date=today)
         r.save()
+    
+    
 
 
 @receiver(post_save, sender=StudentDetails, dispatch_uid="train_image")
