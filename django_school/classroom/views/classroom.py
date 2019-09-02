@@ -18,6 +18,6 @@ def home(request):
         if request.user.is_teacher:
             return redirect('teachers:dashboard')
         else:
-            return redirect('students:submit_details2',
+            return redirect('students:student_details',
                             name=request.user.username)
     return render(request, 'classroom/home.html')

@@ -65,7 +65,7 @@ def download_attendance(request):
                 teacher__username=user, date=date, branch=branch,
                 semester=semester)
 
-            path_to_file = str(day) + "/" + branch + "_" + str(semester) + ".csv"
+            path_to_file = str(date) + "/" + branch + "_" + str(semester) + ".csv"
 
             response = HttpResponse(content_type='text/csv')
 

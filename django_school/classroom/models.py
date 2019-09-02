@@ -2,7 +2,7 @@ import os
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 import datetime
-#from facenet.algo import input_embeddings, recognize_faces_in_cam, TrainImage
+from facenet.algo import input_embeddings, recognize_faces_in_cam, TrainImage
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 today = datetime.datetime.today()
@@ -42,6 +42,9 @@ class Attendance(models.Model):
     branch = models.CharField(max_length=50, choices=BRANCH_CHOICES)
     semester = models.IntegerField()
     image = models.ImageField(upload_to=teacher_directory_path)
+    count = models.IntegerField(default=0)
+    date = models.DateField(default=today)
+    count_added = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username + self.branch
@@ -72,24 +75,21 @@ class AttendanceRecord(models.Model):
 @receiver(post_save, sender=Attendance, dispatch_uid="pass_image")
 def pass_image_to_neural_net(sender, instance, **kwargs):
     image_url = instance.image.url[1::]
-    csv_url = '{0}/{1}/{2}/{3}'.format(
-        instance.user.username, today.year, today.month, today.day
-        )
-    csv_url = "media/attendance/" + csv_url
-    print('url=', csv_url)
-    try:
-        os.makedirs(csv_url)
-    except:
-        pass
-    # have to delete this section
-    csv_url = csv_url + "/" + instance.branch + "_" + str(instance.semester) + ".csv"
-    record = set(recognize_faces_in_cam(input_embeddings, image_url, csv_url))
+    attendance_data = recognize_faces_in_cam(input_embeddings, image_url)
+    record = attendance_data['record']
     teacher = instance.user
     branch = instance.branch
     semester = instance.semester
     subject = instance.subject
+    if not instance.count_added:
+        q = Attendance.objects.get(id=instance.id)
+        q.count = 50
+        q.date_added = True
+        q.save()
+        return
     print("Pass image to neural net:The detected identity in pic uploaded by teacher are = ", record)
     for i in record:
+        print(i)
         student = StudentDetails.objects.get(user__username=i)
         r = AttendanceRecord(teacher=teacher, subject=subject, student=student, semester=semester, branch=branch, date=today)
         r.save()
