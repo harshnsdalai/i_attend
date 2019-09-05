@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-12 col-sm-10 col-12">
+        <table class="table table-hover table-borderless table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Date(Click for info)</th>
+                    <th scope="col">Branch</th>
+                    <th scope="col">Semester</th>
+                    <th scope="col">Subject</th>
+                    <th scope="col">Download</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for attendance in attendance_info  %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter}}</th>
+                        <td><a href="{% url 'teachers:taken_attendance_info' pk=attendance.pk %}">
+                            @{{attendance.date}}</a>
+                        </td>
+                        <td>{{ attendance.branch }}</td>
+                        <td>{{ attendance.semester }}</td>
+                        <td>{{ attendance.subject }}</td>
+                        <td>
+                    <form method="post" action="{% url 'teachers:download_csv' %}">
+                        {% csrf_token %}
+                        
+                        <input type='hidden' value='{{attendance.date.year}}' name='year'>
+                        <input type='hidden' value='{{attendance.date.month}}' name='month'>
+                        <input type='hidden' value='{{attendance.date.day}}' name='date'>
+                        <input type='hidden' value='{{attendance.branch}}' name='branch'>
+                        <input type='hidden' value='{{attendance.semester}}' name='semester'>
+                        <button type="submit" class="btn btn-warning">Download Attendance</button>
+                    </form></td>
+                    </tr>
+            {% empty %}
+                <div class="alert alert-danger">
+                    Sorry no students in the respective Branch or Semester
+                </div>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+  </div>
+{% endblock %}

@@ -43,10 +43,11 @@ class StudentDetailsForm(forms.ModelForm):
         fields = ('branch', 'semester', 'image')
 
 
-BRANCH_CHOICES = [
+BRANCH_CHOICES = [('', '---------')] + [
         ('Information_Technology', 'Information_Technology'),
-        ('Computer_Science_and_Engineering', 'Computer_Science_and_Engineering'),
-        ('Electronics_and_Electrical Engineering', 'Electronics_and_Electrical_Engineering'),
+        ('CSE', 'CSE'),
+        ('Electronics_and_Electrical_Engineering',
+         'Electronics_and_Electrical_Engineering'),
         ('Mining', 'Mining'),
     ]
 
@@ -57,3 +58,9 @@ class DownloadCsv(forms.Form):
     date = forms.IntegerField(min_value=1, max_value=31)
     semester = forms.IntegerField(min_value=1, max_value=12)
     branch = forms.ChoiceField(choices=BRANCH_CHOICES)
+
+
+class FilterForm(forms.Form):
+
+    branch = forms.ChoiceField(choices=BRANCH_CHOICES, required=False)
+    semester = forms.IntegerField(min_value=1, max_value=12, required=False)

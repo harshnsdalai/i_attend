@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+        <div class="col-md-10 col-sm-10 col-12 align-self-center">
+            <h1 class="display-4">Attendance Information
+            </h1>
+            <br><br>
+            
+            <p class="lead"><strong>Teacher's handle :  </strong>@{{attendance_info.user.username}}</p>
+            <p class="lead"><strong>Branch :  </strong>{{attendance_info.branch}}</p>
+            <p class="lead"><strong>Semester :  </strong>{{attendance_info.semester}}</p>
+            <p class="lead"><strong>Subject :  </strong>{{attendance_info.subject}}</p>
+            <p class="lead"><strong>Date :  </strong>{{attendance_info.date}}</p>
+            <p class="lead"><strong>Number of students : </strong>{{attendance_info.count}}</p>
+            <p class="lead"><strong>Image captured </strong></p>
+            <img src="{{attendance_info.image.url}}" class="img-fluid img-thumbnail"
+             style="width: 65vw;" />
+
+             <hr>
+             <div class="alert alert-info">
+                If all the faces are not detected please <strong><a href="{% url 'teachers:attendance' %}">try again</a></strong> from different angle.
+            </div>
+
+            <form method="post" action="{% url 'teachers:download_csv' %}">
+                {% csrf_token %}
+                
+                <input type='hidden' value='{{attendance_info.date.year}}' name='year'>
+                <input type='hidden' value='{{attendance_info.date.month}}' name='month'>
+                <input type='hidden' value='{{attendance_info.date.day}}' name='date'>
+                <input type='hidden' value='{{attendance_info.branch}}' name='branch'>
+                <input type='hidden' value='{{attendance_info.semester}}' name='semester'>
+                <button type="submit" class="btn btn-warning">Download Attendance in CSV</button>
+            </form>
+        </div>
+    </div>
+{% endblock  %}

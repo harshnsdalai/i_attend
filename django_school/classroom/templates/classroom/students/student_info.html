@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+{{success}}
+{% if error %}
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-sm-10 col-12">
+            <div class="alert alert-danger">
+                <p>{{error}}</p>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-sm-10 col-12 align-self-center">
+            <h1 class="display-2">@{{info.user.username}}
+                <img src="{{ info.image.url }}" class="img-fluid img-thumbnail" style="width: 150px; float: right; margin-right: 10px;" />
+            </h1>
+            <br><br>
+            <p class="lead"><strong>Branch :  </strong>{{info.branch}}</p>
+            <p class="lead"><strong>Semester :  </strong>{{info.semester}}</p>
+        
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <h3>Attendance Record</h3>
+        <div class="col-md-10 col-sm-10 col-12">
+      
+        {% for key,values in total_classes.items  %}
+            <p class="lead"><strong>Subject :</strong> {{key}}</p>
+
+            <p class="lead"><strong>Status :</strong>
+             Attended <strong>{{values.0}}</strong> out of <strong>{{values.1}}</strong> classes</p>
+                                
+            
+            <div class="progress" style="height: 30px;">
+                <div class="progress-bar" role="progressbar" style="width: {{values.2}}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{values.2}} %</div>
+            </div>
+            <br>
+            {% if values.2 < 50 %}
+                <div class="alert alert-danger">
+                    Attendance is below minimum requirement of 50% in <strong>{{key}}</strong>. Strict actions will be taken.
+                </div>
+            {% else %}
+            {% endif %}
+            
+            <hr>
+        {% empty %}
+            <div class="alert alert-info">
+                No classes attended yet!               
+            </div>
+            
+        {% endfor %}
+        </div>
+  </div>
+{% endif %}
+  
+
+{% endblock %}
