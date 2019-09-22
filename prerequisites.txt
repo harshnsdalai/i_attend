@@ -1,0 +1,9 @@
+pip install django,django-crispy-forms
+
+&&&&&&
+
+Anaconda virtual environment enabled. Then go in root folder and run
+
+==>py manage.py makemigrations
+==>py manage.py migrate
+==>py manage.py runserver
